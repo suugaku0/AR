@@ -41,8 +41,6 @@
                 0,
                 'XYZ'
               ));
-
-            // 現在のクォータニオン（姿勢）に合成して更新
             object3D.quaternion.multiplyQuaternions(deltaRotationQuaternion, object3D.quaternion);
 
             previousPosition = { x: x, y: y };
