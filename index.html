@@ -2,20 +2,81 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Markerless AR Fix</title>
+    <title>Touch Rotate AR</title>
+    <!-- A-Frame と AR.js の読み込み -->
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+    <!-- 指で回転させるスクリプト（カスタムコンポーネント） -->
+    <script>
+      AFRAME.registerComponent('drag-rotate', {
+        init: function () {
+          var el = this.el;
+          var isDragging = false;
+          var previousMousePosition = { x: 0, y: 0 };
+
+          // タッチ開始 / マウスダウン
+          const startDrag = (x, y) => {
+            isDragging = true;
+            previousMousePosition = { x: x, y: y };
+          };
+
+          // タッチ移動 / マウス移動
+          const moveDrag = (x, y) => {
+            if (!isDragging) return;
+
+            var deltaX = x - previousMousePosition.x;
+            var deltaY = y - previousMousePosition.y;
+
+            // 現在の回転度数を取得
+            var rotation = el.getAttribute('rotation');
+
+            // ドラッグ量に応じて回転（Y軸: 左右回転, X軸: 上下回転）
+            el.setAttribute('rotation', {
+              x: rotation.x + deltaY * 0.5,
+              y: rotation.y + deltaX * 0.5,
+              z: rotation.z
+            });
+
+            previousMousePosition = { x: x, y: y };
+          };
+
+          // タッチ終了 / マウスアップ
+          const endDrag = () => {
+            isDragging = false;
+          };
+
+          // マウスイベント
+          window.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
+          window.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
+          window.addEventListener('mouseup', endDrag);
+
+          // タッチイベント（スマホ対応）
+          window.addEventListener('touchstart', (e) => {
+            if (e.touches.length > 0) {
+              startDrag(e.touches[0].clientX, e.touches[0].clientY);
+            }
+          });
+          window.addEventListener('touchmove', (e) => {
+            if (e.touches.length > 0) {
+              moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+            }
+          });
+          window.addEventListener('touchend', endDrag);
+        }
+      });
+    </script>
   </head>
   <body style="margin: 0; overflow: hidden;">
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
       
-      <!-- カメラの設定 -->
+      <!-- カメラ -->
       <a-entity camera look-controls="enabled: false">
         <!-- 
-          カメラの直下に配置（Z軸マイナスで画面前方へ）
-          位置を少し手前（-0.8）にし、サイズを小さく設定して確実に画面内に収めます
+          drag-rotate 属性を付与することで、画面全体の操作で回転可能に
         -->
         <a-box 
+          drag-rotate
           position="0 0 -0.8" 
           scale="0.15 0.15 0.15" 
           material="color: red; opacity: 0.9;">
