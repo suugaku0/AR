@@ -2,10 +2,13 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Touch Rotate GLTF Model AR</title>
-    <!-- A-Frame と AR.js の読み込み -->
+    <title>Touch Rotate STL Model AR</title>
+    <!-- A-Frame と AR.js -->
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+
+    <!-- ★ STLローダープラグインの追加 -->
+    <script src="https://rawgit.com/donmccurdy/aframe-extras/v6.0.0/dist/aframe-extras.loaders.min.js"></script>
 
     <!-- タッチ回転スクリプト（クォータニオン版） -->
     <script>
@@ -46,12 +49,10 @@
             isDragging = false;
           };
 
-          // マウスイベント
           window.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
           window.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
           window.addEventListener('mouseup', endDrag);
 
-          // タッチイベント
           window.addEventListener('touchstart', (e) => {
             if (e.touches.length > 0) {
               startDrag(e.touches[0].clientX, e.touches[0].clientY);
@@ -70,24 +71,28 @@
   <body style="margin: 0; overflow: hidden;">
     <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;">
       
-      <!-- 1. 3Dモデルアセットのアセット管理 -->
       <a-assets>
         <!-- 
-          src に3Dモデルのパスを指定します。
-          例: "models/apple.glb" や "./apple.glb" 
+          ★ パスの確認: 
+          index.htmlと同じフォルダに置く場合は src="apple.stl"
+          ARフォルダ内にある場合は src="AR/apple.stl"（大文字小文字に注意）
         -->
-        <a-asset-item id="my-model" src="./apple.stl"></a-asset-item>
+        <a-asset-item id="stl-model" src="apple.stl"></a-asset-item>
       </a-assets>
 
       <a-entity camera look-controls="enabled: false">
         
-        <!-- 2. GLTFモデルを表示して回転機能を適用 -->
-        <a-gltf-model 
-          src="#my-model"
+        <!-- 
+          ★ stl-model コンポーネントで呼び出し 
+          ※ STLは色情報を持たないことが多いため material="color: red" などで色を指定します
+        -->
+        <a-entity 
+          stl-model="src: #stl-model"
+          material="color: #e62200; roughness: 0.5;"
           drag-rotate
           position="0 0 -0.8" 
-          scale="0.1 0.1 0.1">
-        </a-gltf-model>
+          scale="0.01 0.01 0.01">
+        </a-entity>
 
       </a-entity>
 
