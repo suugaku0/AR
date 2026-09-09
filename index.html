@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>WebAR Sample</title>
+    <!-- A-Frame と AR.js のライブラリを読み込み -->
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  </head>
+  <body style="margin: 0; overflow: hidden;">
+    <!-- ARシーンの定義 -->
+    <a-scene embedded arjs>
+      <!-- デフォルトで用意されている hiro マーカーを指定 -->
+      <a-marker preset="hiro">
+        <!-- マーカーの上に表示する3Dオブジェクト（赤色の立方体） -->
+        <a-box position="0 0.5 0" material="color: red;"></a-box>
+      </a-marker>
+      
+      <!-- AR用のカメラ -->
+      <a-entity camera></a-entity>
+    </a-scene>
+  </body>
+</html>
